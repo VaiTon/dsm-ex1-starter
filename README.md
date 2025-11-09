@@ -1,45 +1,63 @@
-# Sistemi Distribuiti - Esercizio 1
+# Sistemi Distribuiti - Exercise 1 - Starter Project
 
 ## Descrizione
 
-Deploy di un'applicazione web su tecnologia Java EE (Jakarta 11) tramite WildFly (38.0.0.Final) e Maven (3.9.11).
+Deploy of a web application using Java EE (Jakarta 11) technology via WildFly (38.0.0.Final) and Maven (3.9.11).
 
-## Requisiti
+## Requirements
 
-- Java 25 o superiore
+- Java 25 or higher
 
-## Sviluppo
+## Development
 
-Non è necessario installare Maven localmente, in quanto il progetto include il wrapper Maven (`mvnw`). Per compilare il progetto, eseguire il seguente comando nella directory principale del progetto:
+It is possible to use any IDE that supports Java EE development, such as IntelliJ IDEA, Eclipse, or even a simple text editor combined with command-line tools.
+
+Having maven installed locally is optional, as the project includes the Maven wrapper (`mvnw`).
+
+To compile and package the application, run the following command in the project root directory:
 
 ```bash
 ./mvnw clean package
 ```
 
-### Deploy dell'Applicazione
+### Deploy
 
-Non è necessario installare un application server localmente, in quanto Maven scaricherà automaticamente il server WildFly durante la fase di `wildfly:start`.
+It is possible to deploy the application to a local WildFly server using the WildFly Maven Plugin. To start the server and deploy the application, run the following command:
 
 ```bash
-./mvnw clean package wildfly:start wildfly:deploy
+./mvnw wildfly:provision wildfly:start wildfly:deploy
 ```
 
-L'applicazione sarà accessibile all'indirizzo: [http://localhost:8080/dsm-ex1/](http://localhost:8080/dsm-ex1/)
+The application will be accessible at: [http://localhost:8080/dms-ex1-starter/](http://localhost:8080/dms-ex1-starter/).
 
-### Interfaccia Amministrativa di WildFly
+### WildFly Administration Console (HAL)
 
-Per accedere all'interfaccia amministrativa di WildFly è necessario creare un utente amministrativo. Questo può essere fatto eseguendo il seguente comando
+Before accessing the WildFly administration console, it is necessary to create an administrative user. This can be done by executing the following command:
 
 ```bash
 ./target/server/bin/add-user.sh
 ```
 
-Seguire le istruzioni a schermo per creare un utente di tipo "Management User". Una volta creato l'utente, l'interfaccia amministrativa sarà accessibile all'indirizzo: [http://localhost:9990/console](http://localhost:9990/console).
+and following the on-screen instructions to create a "Management User". Once the user is created, the administration console will be accessible at: [http://localhost:9990/console](http://localhost:9990/console).
 
-### Arresto del Server
+### Stop WildFly Server
 
-Per arrestare il server WildFly, eseguire il seguente comando:
+To stop the WildFly server, run the following command:
 
 ```bash
 ./mvnw wildfly:stop
+```
+
+### Clean Up
+
+To undeploy the application, run the following command:
+
+```bash
+./mvnw wildfly:undeploy
+```
+
+To clean up everything (stop the server, delete the built artifacts, and remove the server instance), run:
+
+```bash
+./mvnw wildfly:shutdown clean
 ```

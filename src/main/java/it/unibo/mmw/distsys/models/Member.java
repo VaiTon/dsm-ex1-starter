@@ -1,7 +1,7 @@
 package it.unibo.mmw.distsys.models;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.io.Serializable;
 
 @SuppressWarnings("serial")

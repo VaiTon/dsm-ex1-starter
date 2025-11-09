@@ -1,25 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>it.unibo.mmw.distsys</groupId>
     <artifactId>dms-ex1-starter</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <packaging>war</packaging>
 
     <properties>
         <project.finalName>dms-ex1-starter</project.finalName>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <wildfly.server.bom.version>25.0.0.Final</wildfly.server.bom.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <version.wildfly.bom>38.0.0.Final</version.wildfly.bom>
+        <version.wildfly.maven.plugin>5.1.5.Final</version.wildfly.maven.plugin>
+        <version.junit5>5.14.1</version.junit5>
+
+        <maven.compiler.release>25</maven.compiler.release>
     </properties>
+
 
     <dependencyManagement>
         <dependencies>
+            <!-- JBoss distributes a complete set of Jakarta EE APIs including
+               a Bill of Materials (BOM). A BOM specifies the versions of a "stack" (or
+               a collection) of artifacts. We use this here so that we always get the correct
+               versions of artifacts (you can read this as the WildFly stack of the Jakarta EE APIs,
+               with some extras tools for your project, such as Arquillian for testing) -->
             <dependency>
                 <groupId>org.wildfly.bom</groupId>
-                <artifactId>wildfly-jakartaee8-with-tools</artifactId>
-                <version>${wildfly.server.bom.version}</version>
+                <artifactId>wildfly-ee-with-tools</artifactId>
+                <version>${version.wildfly.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+
+            <!--Define the JUnit5 bom. WildFly BOM still contains JUnit4, so we have to declare a version here -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${version.junit5}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -27,145 +49,112 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- First declare the APIs we depend on and need for compilation. All
-           of them are provided by JBoss EAP -->
 
-        <!-- Import the CDI API, we use provided scope as the API is included in
-            JBoss EAP -->
+        <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Needed for running tests (you may also use TestNG) -->
+        <!-- Import the JSF API, we use provided scope as the API is included in WildFly / JBoss EAP -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Annotation processor to generate the JPA metamodel classes for
-         typesafe criteria queries -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Jakarta Activation needed for JPA model generation -->
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
+            <groupId>jakarta.faces</groupId>
+            <artifactId>jakarta.faces-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Bean Validation Implementation
-             Provides portable constraints such as @Email
-             Hibernate Validator is shipped in JBoss EAP -->
+        <!-- Import the JAX-RS API, we use provided scope as the API is included in WildFly -->
         <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- hibernate-validator dependencies excluded on server
-             dependency management yet required -->
-        <dependency>
-            <groupId>jakarta.validation</groupId>
-            <artifactId>jakarta.validation-api</artifactId>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Annotation processor that raising compilation errors whenever constraint
-            annotations are incorrectly used. -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the JPA API, we use provided scope as the API is included in
-            JBoss EAP -->
+        <!-- Import the JPA API, we use provided scope as the API is included in WildFly -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Import the Common Annotations API (JSR-250), we use provided scope
-         as the API is included in JBoss EAP -->
+        <!-- Import the EJB API, we use provided scope as the API is included in WildFly -->
         <dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Import the EJB API, we use provided scope as the API is included in
-          JBoss EAP -->
+        <!-- Import the Bean Validation API, we use provided scope as the API is included in WildFly -->
         <dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Import the JSF API, we use provided scope as the API is included in
-            JBoss EAP -->
+        <!-- Test scope dependencies -->
         <dependency>
-            <groupId>org.jboss.spec.javax.faces</groupId>
-            <artifactId>jboss-jsf-api_2.3_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Import the JAX-RS API, we use provided scope as the API is included
-            in JBoss EAP -->
-        <dependency>
-            <groupId>org.jboss.spec.javax.ws.rs</groupId>
-            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.spec.javax.xml.bind</groupId>
-            <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.arquillian.junit5</groupId>
+            <artifactId>arquillian-junit5-container</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.200</version>
+            <groupId>org.wildfly.arquillian</groupId>
+            <artifactId>wildfly-arquillian-container-managed</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.4.32.Final</version>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <scope>test</scope>
         </dependency>
 
-        <!-- <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-shaded</artifactId>
-            <version>4.0.2.Final</version>
-        </dependency> -->
+        <!--See https://issues.redhat.com/browse/WFLY-19779 and https://github.com/wildfly/quickstart/pull/957/
+            httpclient needs commons-logging yet the server uses this instead,
+            to be fully compatible on apps we need to add this dependency whenever commons-logging is needed,
+            but on testing clients like this we could use commons-logging instead -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.25</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.primefaces</groupId>
-            <artifactId>primefaces</artifactId>
-            <version>8.0</version>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>commons-logging-jboss-logging</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
 
     <build>
         <finalName>${project.finalName}</finalName>
         <plugins>
+            <!-- The WildFly plugin deploys your war to a local JBoss AS container and is configured here to provision a WildFly server. -->
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>
                 <artifactId>wildfly-maven-plugin</artifactId>
-                <version>2.1.0.Beta1</version>
+                <version>${version.wildfly.maven.plugin}</version>
+                <configuration>
+                    <discover-provisioning-info>
+                        <version>${version.wildfly.bom}</version>
+                        <add-ons>
+                            <!-- Management Web console. Make sure to add an initial user. -->
+                            <add-on>hal-web-console</add-on>
+                            <!-- MySQL Database Driver -->
+                            <add-on>mysql</add-on>
+                        </add-ons>
+                    </discover-provisioning-info>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
